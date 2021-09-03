@@ -16,7 +16,6 @@ use_cuda = torch.cuda.is_available()
 print(use_cuda)
 
 
-# learning parameters and algorithms
 alpha=1       # AWC alpha for training           
 beta=1          # AWC beta AWC for inference 
 gamma=0.9      # AWCnew <-- (1-gamma) * AWCcurrent + gamma * AWCpast      
@@ -40,9 +39,6 @@ PATH='ACW1H_'+ str(HH) +'_alpha'+ str(alpha) +'_beta'+ str(beta) +'_gamma'+ str(
 PATH = PATH +'_lr'+ str(InitLR) +'_bs'+ str(batch_size) +'_dr'+ str(DR)
 PATH_A = MODEL_PATH + PATH + '.pth'
 
-# make imbalanced data with subsets
-
-# set numbers of samples for each class
 MaxNoClasses=10
 NoTrainSamples = [5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000 ]  # Imbalanced Data 1
 #NoTrainSamples = [500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000]    # Imbalanced Data 2
@@ -51,17 +47,14 @@ NoTestSamples=[1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000]
 #NoTestSamples=[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]               # set the proportion to the NoTrainSamples
 MaxNoTestSamples=sum(NoTestSamples)
 
-# set loss function
 criterion = nn.CrossEntropyLoss()   # has softmax already and class weights may be defined
 
 class_prob = torch.FloatTensor(NoTrainSamples)
 class_prob = class_prob / sum(class_prob)
 
-#class_weights=np.ones(shape=(10,), dtype=np.int8)
 class_weights = 1 / class_prob ** alpha   # initialize class-weights
 class_weights = class_weights / sum(class_weights)
 
-# read data and select predefined portions for each class
 
 num_classes = MaxNoClasses
 
@@ -69,7 +62,7 @@ number_per_class = {}
 for i in range(num_classes): 
     number_per_class[i] = 0
 
-# read and convert to PyTorch objects
+
 
 from torchvision.datasets import ImageFolder
 
@@ -86,7 +79,6 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 
-# define model
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
@@ -112,7 +104,7 @@ class Net(nn.Module):
 
 net = Net()
 
-# lists for performance
+
 LR_list = []
 train_loss_list = []
 test_loss_list = []
